@@ -1,4 +1,12 @@
 # Chaos Engineering
+
+## Install
+* minikube start --vm-driver=hyperkit --cpus 4 --memory 6g
+* brew install python3
+* python3 -m venv ~/.venvs/chaostk
+* source  ~/.venvs/chaostk/bin/activate
+* pip install -U chaostoolkit
+* chaos discover chaostoolkit-kubernetes
 ## Notes
 ### Principles of Chaos Engineering
 * What we usually want to do is build a hypothesis around the steady-state behavior
@@ -23,6 +31,6 @@
   * Use metrics, dashboards, and alerts to confirm that the system as a whole is behaving correctly
 
 ## Upto
-Page 21
+Page 26
 
-Creating A Cluster
+Now that we saw the definition, we can run it and see what we’ll get.
