@@ -61,6 +61,6 @@ KUBERNETES_KEY_FILE=/Users/bobbylei/.minikube/profiles/minikube/apiserver.key KU
   * Use metrics, dashboards, and alerts to confirm that the system as a whole is behaving correctly
 
 ## Upto
-Page 26
+Page 29
 
-Now that we saw the definition, we can run it and see what we’ll get.
+Let’s run this chaos experiment and see what we’re getting.
