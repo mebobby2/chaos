@@ -7,6 +7,36 @@
 * source  ~/.venvs/chaostk/bin/activate
 * pip install -U chaostoolkit
 * chaos discover chaostoolkit-kubernetes
+
+## Issues
+### Need to specify to chaostoolkit where the K8s cluster is
+KUBERNETES_KEY_FILE=/Users/bobbylei/.minikube/profiles/minikube/client.key KUBERNETES_CERT_FILE=/Users/bobbylei/.minikube/profiles/minikube/client.crt KUBERNETES_HOST=https://192.168.64.20:8443 chaos run chaos/terminate-pod.yaml
+
+Using command 'kubectl config view'
+```
+...
+- cluster:
+    certificate-authority: /Users/bobbylei/.minikube/ca.crt
+    extensions:
+    - extension:
+        last-update: Mon, 18 Oct 2021 22:32:28 NZDT
+        provider: minikube.sigs.k8s.io
+        version: v1.17.1
+      name: cluster_info
+    server: https://192.168.64.20:8443
+  name: minikube
+...
+```
+
+Gives you the server to Minikube which we can use to configure KUBERNETES_HOST. It also gives the certificate-authority but we don't need it as KUBERNETES_CA_CERT_FILE isn't needed.
+
+KUBERNETES_KEY_FILE and KUBERNETES_CERT_FILE can be found in $HOME/.minikube/profiles/minikube/
+
+Can use either the client.crt and client.key or the apiserver.crt and apiserver.key. Therefore, this command also works:
+KUBERNETES_KEY_FILE=/Users/bobbylei/.minikube/profiles/minikube/apiserver.key KUBERNETES_CERT_FILE=/Users/bobbylei/.minikube/profiles/minikube/apiserver.crt KUBERNETES_HOST=https://192.168.64.20:8443 chaos run chaos/terminate-pod.yaml
+
+
+
 ## Notes
 ### Principles of Chaos Engineering
 * What we usually want to do is build a hypothesis around the steady-state behavior
