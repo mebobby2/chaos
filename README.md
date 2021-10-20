@@ -60,6 +60,11 @@ KUBERNETES_KEY_FILE=/Users/bobbylei/.minikube/profiles/minikube/apiserver.key KU
   * Confirm the steady-state
   * Use metrics, dashboards, and alerts to confirm that the system as a whole is behaving correctly
 
+### Fault Tolerance vs High Availability
+Fault Tolerance is the pods will be re-created if they are destroyed. It's different from HA.
+
+HA is the app continues to serve requests when a pod or an instance is destroyed. In order to do this, the architecture should run multiple instances as a way to prevent the situation when an app cannot serve request because its in the middle of re-creating the pod. If, for example, we would have three instances of our application and we'd destroy one of them, the other two should be able to continue serving requests while Kubernetes is recreating the failed Pod. In other words, we need to increase the number of replicas of our application.
+
 ## Upto
 Page 29
 
