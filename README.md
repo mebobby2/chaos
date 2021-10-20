@@ -65,7 +65,11 @@ Fault Tolerance is the pods will be re-created if they are destroyed. It's diffe
 
 HA is the app continues to serve requests when a pod or an instance is destroyed. In order to do this, the architecture should run multiple instances as a way to prevent the situation when an app cannot serve request because its in the middle of re-creating the pod. If, for example, we would have three instances of our application and we'd destroy one of them, the other two should be able to continue serving requests while Kubernetes is recreating the failed Pod. In other words, we need to increase the number of replicas of our application.
 
-## Upto
-Page 29
+### How to Scale Pods
+We could scale up in quite a few ways. We could just go to the definition of the Deployment and say that there should be two or three or four replicas of that application. But that’s a bad idea. That’s static. That would mean that if we say three replicas, then our app would always have three replicas. What we want is for our application to go up and down. It should increase and decrease the number of instances depending on their memory or CPU utilization. We could even define more complicated criteria based on Prometheus.
 
-Let’s run this chaos experiment and see what we’re getting.
+
+## Upto
+Page 66
+
+Obstructing And Destroying Network
