@@ -10,7 +10,7 @@
 
 ## Issues
 ### Need to specify to chaostoolkit where the K8s cluster is
-KUBERNETES_KEY_FILE=/Users/bobbylei/.minikube/profiles/minikube/client.key KUBERNETES_CERT_FILE=/Users/bobbylei/.minikube/profiles/minikube/client.crt KUBERNETES_HOST=https://192.168.64.20:8443 chaos run chaos/terminate-pod.yaml
+KUBERNETES_KEY_FILE=/Users/bobbylei/.minikube/profiles/minikube/client.key KUBERNETES_CERT_FILE=/Users/bobbylei/.minikube/profiles/minikube/client.crt KUBERNETES_HOST=https://192.168.64.20:8443 chaos run chaos/terminate-pod.yaml --rollback-strategy=always
 
 Using command 'kubectl config view'
 ```
@@ -35,7 +35,10 @@ KUBERNETES_KEY_FILE and KUBERNETES_CERT_FILE can be found in $HOME/.minikube/pro
 Can use either the client.crt and client.key or the apiserver.crt and apiserver.key. Therefore, this command also works:
 KUBERNETES_KEY_FILE=/Users/bobbylei/.minikube/profiles/minikube/apiserver.key KUBERNETES_CERT_FILE=/Users/bobbylei/.minikube/profiles/minikube/apiserver.crt KUBERNETES_HOST=https://192.168.64.20:8443 chaos run chaos/terminate-pod.yaml
 
-
+## Tips
+* kubectl label namespace go-demo-8 istio-injection=enabled
+  * label every the namespace so Istio will add a proxy container to every pod running in that namespace
+  * Envoy is the proxy Istio injects into Pods as side-car containers. If you want to fine-tune your Virtual Service definitions with things such as retryOn codes, refer to the Envoy documentation
 
 ## Notes
 ### Principles of Chaos Engineering
@@ -68,8 +71,15 @@ HA is the app continues to serve requests when a pod or an instance is destroyed
 ### How to Scale Pods
 We could scale up in quite a few ways. We could just go to the definition of the Deployment and say that there should be two or three or four replicas of that application. But that’s a bad idea. That’s static. That would mean that if we say three replicas, then our app would always have three replicas. What we want is for our application to go up and down. It should increase and decrease the number of instances depending on their memory or CPU utilization. We could even define more complicated criteria based on Prometheus.
 
+### Fix at K8s or App Level
+For example - partial network failures can be fixed at the Envoy level, but what about total failures of the network? They should be at the application level...
+
+I will not show you how to fix that situation because the solution should most likely not be applied inside Kubernetes, but on the application level. In that scenario, assuming that we have other processes in place that deal with infrastructure when the network completely fails, it will be recuperated at one moment. We cannot expect Kubernetes and Istio and software around our applications to fix all of the problems. And this is the case where the design of our applications should be able to handle it.
+
+Let’s say that your frontend application is accessible, but that the backend is not. If, for example, your frontend application cannot, under any circumstance, communicate with the backend application, it should probably show a message like “shopping cart is currently not available, but feel free to browse our products” because they go to different backend applications. That’s why we like microservices. The smaller the applications are, the smaller the scope of an issue. Or maybe your frontend application is not accessible, and then you would serve your users some static version of your frontend. There can be many different scenarios, and we won’t go through them.
+
 
 ## Upto
-Page 66
+Page 95
 
-Obstructing And Destroying Network
+Simulating Denial Of Service Attacks
