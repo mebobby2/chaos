@@ -80,6 +80,27 @@ Let’s say that your frontend application is accessible, but that the backend i
 
 
 ## Upto
-Page 95
+Page 103
 
-Simulating Denial Of Service Attacks
+Draining And Deleting Nodes
+### Deploy
+kubectl --namespace go-demo-8 apply --filename k8s/health/app/
+istioctl manifest install --skip-confirmation
+kubectl --namespace go-demo-8 apply --filename k8s/network/istio.yaml
+kubectl --namespace go-demo-8 apply --filename k8s/network/repeater
+
+### Test
+export INGRESS_PORT=$(kubectl --namespace istio-system get service istio-ingressgateway --output jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+export INGRESS_HOST=$(minikube ip):$INGRESS_PORT
+
+```
+for i in {1..10}; do
+  curl -H "Host: repeater.acme.com" "http://$INGRESS_HOST?addr=http://go-demo-8"
+  echo ""
+done
+```
+
+### Load Test
+```
+kubectl --namespace go-demo-8 run siege --image yokogawa/siege -it --rm -- --concurrent 500 --time 20S "http://go-demo-8"
+```
