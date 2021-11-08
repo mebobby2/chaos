@@ -78,16 +78,18 @@ I will not show you how to fix that situation because the solution should most l
 
 Let’s say that your frontend application is accessible, but that the backend is not. If, for example, your frontend application cannot, under any circumstance, communicate with the backend application, it should probably show a message like “shopping cart is currently not available, but feel free to browse our products” because they go to different backend applications. That’s why we like microservices. The smaller the applications are, the smaller the scope of an issue. Or maybe your frontend application is not accessible, and then you would serve your users some static version of your frontend. There can be many different scenarios, and we won’t go through them.
 
+## Istio Circuit Breaker
+More reading: https://tech.olx.com/demystifying-istio-circuit-breaking-27a69cac2ce4
 
-## Upto
-Page 103
-
-Draining And Deleting Nodes
 ### Deploy
-kubectl --namespace go-demo-8 apply --filename k8s/health/app/
+from: go-demo-8 root directory
+kubectl create namespace go-demo-8
 istioctl manifest install --skip-confirmation
+kubectl label namespace go-demo-8 istio-injection=enabled
+kubectl --namespace go-demo-8 apply --filename k8s/health/app/
 kubectl --namespace go-demo-8 apply --filename k8s/network/istio.yaml
 kubectl --namespace go-demo-8 apply --filename k8s/network/repeater
+kubectl --namespace go-demo-8 apply --filename k8s/debug/fortio-deploy.yaml (for simulating DoS attack)
 
 ### Test
 export INGRESS_PORT=$(kubectl --namespace istio-system get service istio-ingressgateway --output jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
@@ -104,3 +106,18 @@ done
 ```
 kubectl --namespace go-demo-8 run siege --image yokogawa/siege -it --rm -- --concurrent 500 --time 20S "http://go-demo-8"
 ```
+
+### Debug
+kubectl --namespace go-demo-8 apply --filename k8s/debug/fortio-deploy.yaml
+export FORTIO_POD=$(kubectl -n go-demo-8 get pods -l app=fortio -o 'jsonpath={.items[0].metadata.name}')
+kubectl exec "$FORTIO_POD" -c fortio -- /usr/bin/fortio curl -quiet http://go-demo-8/limiter (one off)
+kubectl -n go-demo-8 exec "$FORTIO_POD" -c fortio -- /usr/bin/fortio load -c 2 -qps 0 -n 20 -loglevel Warning http://go-demo-8/limiter (simulate DoS)
+
+View number of requests tripped:
+kubectl -n go-demo-8 exec "$FORTIO_POD" -c istio-proxy -- pilot-agent request GET stats | grep go-demo-8 | grep pending
+
+
+## Upto
+Page 103
+
+Draining And Deleting Nodes
