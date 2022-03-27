@@ -118,6 +118,6 @@ kubectl -n go-demo-8 exec "$FORTIO_POD" -c istio-proxy -- pilot-agent request GE
 
 
 ## Upto
-Page 103
+Page 122
 
-Draining And Deleting Nodes
+Destroying Cluster Zones
