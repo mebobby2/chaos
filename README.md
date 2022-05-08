@@ -118,6 +118,8 @@ kubectl -n go-demo-8 exec "$FORTIO_POD" -c istio-proxy -- pilot-agent request GE
 
 
 ## Upto
-Page 122
+Page 125
 
-Destroying Cluster Zones
+Deploying The Application
+
+Before that: Install Istio
